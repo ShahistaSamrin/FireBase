@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bank Application</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f8fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="form-container">
+        <h2>Bank Customer Form</h2>
+        <input v-model="customer.name" placeholder="Name">
+        <input v-model="customer.fatherName" placeholder="Father Name">
+        <input v-model="customer.motherName" placeholder="Mother Name">
+        <input v-model="customer.contactNumber" placeholder="Contact Number" type="tel">
+        <input v-model="customer.gmail" placeholder="Gmail" type="email">
+        <button @click="submitForm">Submit</button>
+    </div>
+
+    <script>
+        // ✅ Replace with your Firebase config:
+        const firebaseConfig = {
+            apiKey: "AIzaSyAViQKbQmLJMFWtL8GdSzJCKqC2pGhkEb8",
+            authDomain: "application-de10a.firebaseapp.com",
+            databaseURL: "https://application-de10a-default-rtdb.firebaseio.com",
+            projectId: "application-de10a",
+            storageBucket: "application-de10a.firebasestorage.app",
+            messagingSenderId: "1064850160021",
+            appId: "1:1064850160021:web:8b49cc4076c4b9a86ade9c",
+            measurementId: "G-78XY9SJ76P"
+        };
+        // ✅ Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    customer: {
+                        name: '',
+                        fatherName: '',
+                        motherName: '',
+                        contactNumber: '',
+                        gmail: ''
+                    }
+                }
+            },
+            methods: {
+                submitForm() {
+                    const c = this.customer;
+                    if (c.name && c.fatherName && c.motherName && c.contactNumber && c.gmail) {
+                        database.ref("customers").push(c)
+                            .then(() => {
+                                alert("Submitted successfully!");
+                                this.customer = {
+                                    name: '',
+                                    fatherName: '',
+                                    motherName: '',
+                                    contactNumber: '',
+                                    gmail: ''
+                                };
+                            })
+                            .catch(error => {
+                                console.error("Error writing to database:", error);
+                                alert("Failed to submit. Check console.");
+                            });
+                    } else {
+                        alert("Please fill out all fields.");
+                    }
+                }
+            }
+        }).mount("#app");
+    </script>
+</body>
+
+</html>
